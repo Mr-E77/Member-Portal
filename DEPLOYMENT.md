@@ -494,7 +494,7 @@ Content-Security-Policy: default-src 'self'
 **Solutions**:
 - Verify variables are set in hosting platform settings
 - Rebuild application after adding variables
-- Check variable naming (must start with REACT_APP_ for Create React App)
+- Check variable naming conventions for your framework (e.g., REACT_APP_ for Create React App, NEXT_PUBLIC_ for Next.js, VITE_ for Vite)
 - Restart application/server
 - Clear cache and hard reload browser
 

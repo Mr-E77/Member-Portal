@@ -310,8 +310,8 @@ sudo npm install -g pm2
 
 ```bash
 # Clone repository
-git clone https://github.com/Mr-E77/codex-build-member-portal-landing-page.git
-cd codex-build-member-portal-landing-page
+git clone https://github.com/Mr-E77/Member-Portal.git
+cd Member-Portal
 
 # Install dependencies
 npm install
@@ -329,7 +329,7 @@ server {
     listen 80;
     server_name your-domain.com;
 
-    root /path/to/codex-build-member-portal-landing-page/build;
+    root /path/to/Member-Portal/build;
     index index.html;
 
     location / {
@@ -569,7 +569,7 @@ npm run build
 
 For deployment issues:
 
-- Check the [GitHub Issues](https://github.com/Mr-E77/codex-build-member-portal-landing-page/issues)
+- Check the [GitHub Issues](https://github.com/Mr-E77/Member-Portal/issues)
 - Contact DevOps team: devops@codexbuild.com
 - Review platform-specific documentation
 

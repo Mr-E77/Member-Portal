@@ -19,6 +19,28 @@ A modern, responsive landing page for the Codex Build member portal. This projec
 
 The Codex Build Member Portal Landing Page is designed to provide a welcoming and informative entry point for members of the Codex Build community. It showcases key features, benefits, and provides easy navigation to the full member portal.
 
+### What This Project Does
+
+This landing page serves as the primary interface for members to:
+
+- **Discover Platform Features**: Learn about available tools, resources, and services within the Codex Build ecosystem
+- **Access Member Portal**: Provide seamless navigation to the authenticated member portal dashboard
+- **View Community Updates**: Display announcements, events, and important notifications for members
+- **Showcase Member Benefits**: Highlight exclusive perks, resources, and opportunities available to members
+- **Provide Quick Actions**: Enable fast access to common tasks like profile management, documentation, and support
+- **Display Member Testimonials**: Feature success stories and feedback from the Codex Build community
+- **Facilitate Onboarding**: Guide new members through getting started with the platform
+
+### Key Capabilities
+
+- **User Authentication Integration**: Seamless login/signup flow with secure authentication
+- **Dynamic Content Display**: Real-time updates for announcements and community activities
+- **Personalized User Experience**: Tailored content based on member status and preferences
+- **Resource Hub**: Centralized access to documentation, tutorials, and learning materials
+- **Event Calendar**: Upcoming workshops, meetups, and community events
+- **Member Directory**: Connect with other members of the Codex Build community
+- **Support Portal Access**: Quick links to help desk, FAQs, and customer support
+
 ## Features
 
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
@@ -39,8 +61,8 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Mr-E77/codex-build-member-portal-landing-page.git
-   cd codex-build-member-portal-landing-page
+   git clone https://github.com/Mr-E77/Member-Portal.git
+   cd Member-Portal
    ```
 
 2. Install dependencies:
@@ -94,7 +116,7 @@ npm test
 ## Project Structure
 
 ```
-codex-build-member-portal-landing-page/
+Member-Portal/
 ├── public/              # Static assets
 ├── src/                 # Source files
 │   ├── components/      # React components

@@ -20,8 +20,8 @@ This document provides detailed instructions for deploying the Codex Build Membe
 
 Before deploying, ensure you have:
 
-- [ ] Node.js (v14.x or higher) installed
-- [ ] npm (v6.x or higher) installed
+- [ ] Node.js (v18.x or v20.x LTS) installed
+- [ ] npm (v8.x or higher) installed
 - [ ] Access to your hosting platform account
 - [ ] Domain name configured (if using custom domain)
 - [ ] SSL certificate (most platforms provide this automatically)
@@ -225,12 +225,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '20'
       
       - name: Install dependencies
         run: npm install
@@ -239,7 +239,7 @@ jobs:
         run: npm run build
       
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -249,7 +249,7 @@ jobs:
         run: aws s3 sync build/ s3://codex-build-landing-page --delete
       
       - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
 ```
 
 ### GitHub Pages
@@ -295,8 +295,8 @@ For deployment to your own server (VPS, dedicated server, etc.).
 # SSH into your server
 ssh user@your-server.com
 
-# Install Node.js and npm
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+# Install Node.js and npm (use current LTS)
+curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install nginx (reverse proxy)
@@ -390,20 +390,29 @@ Create `deploy.sh`:
 ```bash
 #!/bin/bash
 
+# Exit on any error
+set -e
+
+echo "Starting deployment..."
+
 # Pull latest changes
+echo "Pulling latest changes..."
 git pull origin main
 
 # Install dependencies
+echo "Installing dependencies..."
 npm install
 
 # Build
+echo "Building application..."
 npm run build
 
 # Restart application (if using PM2)
-pm2 restart landing-page
+echo "Restarting application..."
+pm2 restart landing-page || echo "PM2 restart skipped"
 
 # Or restart nginx (if serving static files)
-sudo systemctl restart nginx
+sudo systemctl restart nginx || echo "Nginx restart skipped"
 
 echo "Deployment completed successfully!"
 ```
@@ -458,10 +467,11 @@ Add security headers in your server/platform configuration:
 ```
 X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
 Referrer-Policy: strict-origin-when-cross-origin
-Content-Security-Policy: default-src 'self'
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://trusted-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.example.com
 ```
+
+**Note**: The Content-Security-Policy should be customized based on your application's actual resource requirements (external APIs, CDNs, fonts, etc.). The example above is more permissive than `default-src 'self'` alone, which would block most external resources.
 
 ## Troubleshooting
 
@@ -548,15 +558,18 @@ If deployment fails or causes issues:
 # Restore previous version from backup
 aws s3 sync s3://codex-build-landing-page-backup/ s3://codex-build-landing-page/
 
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+# Invalidate CloudFront cache (replace with your distribution ID)
+aws cloudfront create-invalidation --distribution-id <YOUR_DISTRIBUTION_ID> --paths "/*"
 ```
 
 ### Custom Server
 
 ```bash
-# Revert to previous commit
-git reset --hard HEAD~1
+# Option 1: Revert the last deployment safely (preserves history)
+git revert --no-edit HEAD
+
+# Option 2: Deploy a known good commit (replace <commit-hash> with actual hash)
+# git checkout <commit-hash>
 
 # Rebuild
 npm run build

@@ -53,8 +53,8 @@ This landing page serves as the primary interface for members to:
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js**: Version 14.x or higher
-- **npm**: Version 6.x or higher (comes with Node.js)
+- **Node.js**: Version 18.x or 20.x (LTS)
+- **npm**: Version 8.x or higher (comes with recent Node.js LTS versions)
 - **Git**: For version control
 
 ## Installation

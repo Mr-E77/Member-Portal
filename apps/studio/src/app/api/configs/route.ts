@@ -17,13 +17,27 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, preset, data } = body;
+    const id = `config-${Date.now()}`;
+
+    const normalizedSections = Array.isArray(data?.sections)
+      ? data.sections
+          .sort((a: { order?: number }, b: { order?: number }) => (a.order ?? 0) - (b.order ?? 0))
+          .map((section: any, idx: number) => ({
+            ...section,
+            order: idx + 1,
+          }))
+      : [];
 
     const config = await prisma.portalConfigModel.create({
       data: {
-        id: `config-${Date.now()}`,
+        id,
         name,
         preset,
-        data,
+        data: {
+          ...data,
+          id,
+          sections: normalizedSections,
+        },
       },
     });
 

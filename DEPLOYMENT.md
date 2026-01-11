@@ -1,17 +1,17 @@
 # Deployment Instructions
 
-This document provides detailed instructions for deploying the Codex Build Member Portal Landing Page to various hosting platforms.
+This document provides detailed instructions for deploying the Mr.E Generic Membership Platform (both Portal and Studio apps) to various hosting platforms.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Environment Variables](#environment-variables)
+- [Database Setup](#database-setup)
 - [Build Process](#build-process)
 - [Deployment Platforms](#deployment-platforms)
-  - [Vercel](#vercel)
+  - [Vercel (Recommended)](#vercel-recommended)
+  - [Railway](#railway)
   - [Netlify](#netlify)
-  - [AWS S3 + CloudFront](#aws-s3--cloudfront)
-  - [GitHub Pages](#github-pages)
   - [Custom Server](#custom-server)
 - [Post-Deployment](#post-deployment)
 - [Troubleshooting](#troubleshooting)
@@ -22,70 +22,149 @@ Before deploying, ensure you have:
 
 - [ ] Node.js (v18.x or v20.x LTS) installed
 - [ ] npm (v8.x or higher) installed
+- [ ] PostgreSQL database (managed service like Neon, Supabase, or Railway)
 - [ ] Access to your hosting platform account
 - [ ] Domain name configured (if using custom domain)
-- [ ] SSL certificate (most platforms provide this automatically)
+- [ ] OAuth app credentials (GitHub, Google)
 - [ ] All required API keys and credentials
 
 ## Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
+### Portal App (.env in apps/portal)
 
 ```bash
-# Application Settings
-NODE_ENV=production
-PORT=3000
-PUBLIC_URL=https://your-domain.com
+# Database
+DATABASE_URL="postgresql://user:password@host:5432/db_name?sslmode=require"
 
-# API Configuration
-API_BASE_URL=https://api.codexbuild.com
-API_KEY=your_api_key_here
+# NextAuth
+NEXTAUTH_URL="https://your-domain.com"
+NEXTAUTH_SECRET="generate-with-openssl-rand-base64-32"
 
-# Analytics (Optional)
-GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X
-MIXPANEL_TOKEN=your_mixpanel_token
+# OAuth Providers
+GITHUB_CLIENT_ID="your_github_oauth_client_id"
+GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
+GOOGLE_CLIENT_ID="your_google_oauth_client_id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your_google_oauth_client_secret"
 
-# Feature Flags (Optional)
-ENABLE_BETA_FEATURES=false
+# Portal Configuration
+PORTAL_CONFIG_ID="generic-default"
+NEXT_PUBLIC_PRESET="generic"
+```
+
+### Studio App (.env in apps/studio)
+
+```bash
+# Database (same as portal)
+DATABASE_URL="postgresql://user:password@host:5432/db_name?sslmode=require"
 ```
 
 **Important**: Never commit `.env` files to version control. Use your hosting platform's environment variable settings.
 
+## Database Setup
+
+### 1. Provision PostgreSQL Database
+
+Choose a managed PostgreSQL provider:
+
+- **Neon** (https://neon.tech) - Free tier available
+- **Supabase** (https://supabase.com) - Free tier available  
+- **Railway** (https://railway.app) - Pay-as-you-go
+- **Heroku Postgres** - Paid tiers
+
+### 2. Run Migrations
+
+```bash
+cd apps/portal
+
+# Set DATABASE_URL in .env
+# Then run migrations
+npx prisma migrate deploy
+
+# Or for development
+npx prisma migrate dev
+```
+
+### 3. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
 ## Build Process
 
-### 1. Prepare for Production
+### 1. Install Dependencies
 
 ```bash
-# Install dependencies
+# From repo root
 npm install
-
-# Run linting
-npm run lint
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
 ```
 
-### 2. Verify Build
+### 2. Build Apps
 
 ```bash
-# Test the production build locally
-npm start
+# Build portal
+npm run build:portal
 
-# Or serve the build directory
-npx serve -s build
+# Build studio
+npm run build:studio
 ```
 
-Visit `http://localhost:3000` to verify the build works correctly.
+### 3. Test Locally
+
+```bash
+# Run portal
+npm run dev:portal
+
+# Run studio (in separate terminal)
+npm run dev:studio
+```
 
 ## Deployment Platforms
 
-### Vercel
+### Vercel (Recommended)
 
-Vercel is recommended for quick and easy deployments.
+Vercel is recommended for Next.js deployments with automatic scaling and edge optimization.
+
+#### Portal App Deployment
+
+1. **Install Vercel CLI**:
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Deploy from apps/portal**:
+   ```bash
+   cd apps/portal
+   vercel --prod
+   ```
+
+3. **Configure Environment Variables** in Vercel Dashboard:
+   - Add all variables from portal .env
+   - Set `NEXTAUTH_URL` to your production URL
+   - Configure OAuth callback URLs in GitHub/Google
+
+4. **Set Build Settings**:
+   - Framework Preset: Next.js
+   - Root Directory: `apps/portal`
+   - Build Command: `npm run build`
+   - Output Directory: `.next`
+
+#### Studio App Deployment
+
+1. **Deploy from apps/studio**:
+   ```bash
+   cd apps/studio
+   vercel --prod
+   ```
+
+2. **Configure Environment Variables**:
+   - Add `DATABASE_URL`
+
+3. **Set Build Settings**:
+   - Framework Preset: Next.js
+   - Root Directory: `apps/studio`
+   - Build Command: `npm run build`
+   - Output Directory: `.next`
 
 #### Automatic Deployment (GitHub Integration)
 
@@ -95,9 +174,14 @@ Vercel is recommended for quick and easy deployments.
    - Click "New Project"
    - Import your repository
 
-2. **Configure Project**:
-   - Framework Preset: Auto-detect or select appropriate framework
-   - Root Directory: `./`
+2. **Create Two Projects**:
+   - One for `apps/portal`
+   - One for `apps/studio`
+
+3. **Configure Each Project**:
+   - Set root directory appropriately
+   - Add environment variables
+   - Enable automatic deployments from main branch
    - Build Command: `npm run build`
    - Output Directory: `build` or `dist`
 

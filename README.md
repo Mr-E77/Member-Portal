@@ -1,6 +1,17 @@
 # Mr.E Generic Membership Platform
 
+[![CI/CD Pipeline](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml/badge.svg)](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/Mr-E77/Member-Portal/actions/workflows/e2e-scheduled.yml/badge.svg)](https://github.com/Mr-E77/Member-Portal/actions/workflows/e2e-scheduled.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A flexible, config-driven membership portal platform built with Next.js, TypeScript, Prisma, and NextAuth. This monorepo contains both the member-facing portal and a design studio for creating and managing portal configurations.
+
+## 🚀 Quick Links
+
+- **📚 [Production Deployment Guide](PRODUCTION.md)** - Complete production deployment instructions
+- **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
+- **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline
+- **📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
 
 ## Table of Contents
 
@@ -311,13 +322,43 @@ This project follows standard JavaScript/React coding conventions:
 
 ## Deployment
 
-For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+### Production Deployment
 
-Quick deployment overview:
-- Build the production bundle
-- Deploy to your hosting platform (Vercel, Netlify, AWS, etc.)
-- Configure environment variables
-- Set up custom domain (optional)
+**Ready to deploy?** See [PRODUCTION.md](PRODUCTION.md) for complete production deployment guide including:
+- Database setup (Neon, Supabase, Railway)
+- OAuth configuration (GitHub & Google)
+- Vercel deployment steps
+- Environment variables
+- Custom domain configuration
+- Post-deployment verification
+
+### Quick Deployment
+
+**Vercel (Recommended):**
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy portal
+cd apps/portal
+vercel --prod
+
+# Deploy studio
+cd apps/studio
+vercel --prod
+```
+
+**Alternative Platforms:**
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for Netlify, Railway, AWS, and custom server options
+
+### Pre-Deployment Checklist
+
+- ✅ All tests passing (`npm test` and `npm run test:e2e`)
+- ✅ Environment variables configured
+- ✅ Database migrations deployed
+- ✅ OAuth apps created and configured
+- ✅ Production secrets generated
+- ✅ Custom domain DNS configured (optional)
 
 ## Contributing
 

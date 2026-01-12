@@ -1,0 +1,99 @@
+{
+  "name": "member-portal",
+  "framework": "nextjs",
+  "rootDirectory": "apps/portal",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "env": {
+    "DATABASE_URL": {
+      "type": "secret",
+      "comment": "PostgreSQL connection string (e.g., from Neon, Supabase, or Railway)"
+    },
+    "NEXTAUTH_URL": {
+      "type": "secret",
+      "comment": "Production URL (e.g., https://portal.yourdomain.com)"
+    },
+    "NEXTAUTH_SECRET": {
+      "type": "secret",
+      "comment": "Generate with: openssl rand -base64 32"
+    },
+    "GITHUB_CLIENT_ID": {
+      "type": "secret",
+      "comment": "GitHub OAuth App Client ID"
+    },
+    "GITHUB_CLIENT_SECRET": {
+      "type": "secret",
+      "comment": "GitHub OAuth App Client Secret"
+    },
+    "GOOGLE_CLIENT_ID": {
+      "type": "secret",
+      "comment": "Google OAuth Client ID from Cloud Console"
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "type": "secret",
+      "comment": "Google OAuth Client Secret from Cloud Console"
+    },
+    "PORTAL_CONFIG_ID": {
+      "type": "plain",
+      "value": "generic-default",
+      "comment": "Default portal configuration (generic-default, campus-v1, tech-v1, or fitness-club-v1)"
+    },
+    "NEXT_PUBLIC_PRESET": {
+      "type": "plain",
+      "value": "generic",
+      "comment": "Public preset identifier (generic, campus, tech-startup, or fitness)"
+    }
+  },
+  "build": {
+    "env": {
+      "SKIP_ENV_VALIDATION": "true"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/campus",
+      "destination": "/campus/home",
+      "permanent": false
+    },
+    {
+      "source": "/tech-startup",
+      "destination": "/tech-startup/home",
+      "permanent": false
+    },
+    {
+      "source": "/fitness",
+      "destination": "/fitness/home",
+      "permanent": false
+    }
+  ]
+}

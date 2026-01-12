@@ -31,6 +31,10 @@ model User {
   targetImpersonations AdminImpersonation[] @relation("TargetImpersonations")
   notifications Notification[]
   apiTokens ApiToken[]
+
+  @@index([membershipTier])
+  @@index([stripeCustomerId])
+  @@index([createdAt])
 }
 
 model Account {
@@ -96,6 +100,9 @@ model Subscription {
 
   @@index([userId])
   @@index([stripeSubscriptionId])
+  @@index([status])
+  @@index([renewalDate])
+  @@index([userId, status])
 }
 
 model AdminActivityLog {
@@ -160,5 +167,7 @@ model ApiToken {
 
   @@index([userId])
   @@index([token])
+  @@index([userId, expiresAt])
+  @@index([lastUsedAt])
   @@map("api_tokens")
 }

@@ -2,7 +2,7 @@
 
 ## 🎉 PRODUCTION READY
 
-The Member Portal is **fully implemented** and ready for deployment. All core features, security, testing, and documentation are complete.
+The Member Portal is **fully implemented** and ready for deployment. All core features, security, testing, and documentation are complete. Phase 4 performance and monitoring is finished with caching, advanced health checks, and enhanced Sentry instrumentation in place.
 
 ---
 
@@ -246,11 +246,12 @@ Follow [QUICK_START.md](QUICK_START.md) for step-by-step Vercel deployment.
 ## 🎯 Next Steps for Launch
 
 ### Immediate (Before Deployment)
-1. [ ] Create Vercel account
-2. [ ] Create production database (Neon)
-3. [ ] Create Stripe account
-4. [ ] Setup OAuth apps (GitHub, Google)
-5. [ ] Generate environment secrets
+1. [ ] Review PHASE_4_DEPLOYMENT_CHECKLIST.md for rollout plan
+2. [ ] Create Vercel account
+3. [ ] Create production database (Neon)
+4. [ ] Create Stripe account
+5. [ ] Setup OAuth apps (GitHub, Google)
+6. [ ] Generate environment secrets
 
 ### Deployment (30 minutes)
 1. [ ] Add environment variables to Vercel
@@ -303,9 +304,10 @@ Follow [QUICK_START.md](QUICK_START.md) for step-by-step Vercel deployment.
 
 ## 📈 Performance
 
-- **Portal Load Time:** <2s (Lighthouse >85)
-- **API Response Time:** <100ms (p95)
-- **Database Queries:** Optimized with indexes
+- **Portal Load Time:** FCP <1.5s, LCP <2.0s (targets)
+- **API Response Time:** <500ms (p95) with middleware tracking
+- **Cache Hit Rate:** Target >75% via in-memory cache layer
+- **Database Queries:** Optimized with indexes and query batching
 - **Bundle Size:** ~150KB gzipped (portal)
 - **Time to Interactive:** <1.5s
 
@@ -362,6 +364,8 @@ All documentation is self-contained in the repository:
 - ✅ Advanced admin features (impersonation, bulk actions, activity logs)
 - ✅ API token system (JWT, rate limiting)
 - ✅ Database optimization (indexes, caching)
+- ✅ Performance & monitoring stack (cache layer, Sentry enhanced, health checks)
+- ✅ API middleware for automatic monitoring and caching
 - ✅ Scheduled jobs (renewal reminders - cron)
 - ✅ Comprehensive testing & CI/CD
 - ✅ Full documentation suite

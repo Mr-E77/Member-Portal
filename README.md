@@ -13,8 +13,7 @@ A flexible, config-driven membership portal platform built with Next.js, TypeScr
 - **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
 - **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline
 - **⚡ [Performance & Budgets](#performance--lighthouse-ci)** - Lighthouse CI budgets and local commands
-- **� [Monitoring & Observability](MONITORING.md)** - Sentry error tracking, uptime monitoring, performance metrics
-- **�📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
+- **� [Monitoring & Observability](MONITORING.md)** - Sentry error tracking, uptime monitoring, performance metrics- **💳 [Payments & Stripe](PAYMENTS.md)** - Tier upgrades, subscription management, webhook handling- **�📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
 
 ## Table of Contents
 

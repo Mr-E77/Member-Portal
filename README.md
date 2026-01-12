@@ -7,9 +7,24 @@
 
 A flexible, config-driven membership portal platform built with Next.js, TypeScript, Prisma, and NextAuth. This monorepo contains both the member-facing portal and a design studio for creating and managing portal configurations.
 
+> **Status:** ✅ **PRODUCTION READY** - All features complete, tested, and documented. Ready for deployment.
+
+## 🎯 Getting Started
+
+**New to the project?** Start here:
+1. Read [STATUS.md](STATUS.md) for project overview
+2. Follow [QUICK_START.md](QUICK_START.md) to deploy in ~30 minutes
+3. Review [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) before launch
+4. Use [TROUBLESHOOTING.md](TROUBLESHOOTING.md) if issues arise
+
 ## 🚀 Quick Links
 
 - **✨ [Complete Feature List](FEATURES.md)** - 150+ implemented features across all categories
+- **🎯 [Project Status](STATUS.md)** - Current status, completed features, production readiness
+- **⚡ [Quick Start Guide](QUICK_START.md)** - Deploy to production in ~30 minutes (9 easy steps)
+- **📋 [Launch Checklist](LAUNCH_CHECKLIST.md)** - Pre-launch verification and go-live procedures
+- **🧪 [Testing Checklist](TESTING_CHECKLIST.md)** - Complete E2E testing guide for all features
+- **🔧 [Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
 - **📚 [Production Deployment Guide](PRODUCTION.md)** - Complete production deployment instructions
 - **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
 - **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline

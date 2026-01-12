@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getStaticConfig } from "@/config";
 import { TierCard } from "@mre/ui";
+import { UpgradeButton } from "@/components/UpgradeButton";
+import { UpgradeStatusMessage } from "@/components/UpgradeStatusMessage";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -47,6 +49,8 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <UpgradeStatusMessage />
+        
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">
             Welcome to {config.platformName}, {user.name || session.user.email}!
@@ -78,17 +82,22 @@ export default async function DashboardPage() {
           <h3 className="text-2xl font-bold mb-6">Available Membership Tiers</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {config.membershipTiers.map((tier) => (
-              <TierCard
-                key={tier.id}
-                name={tier.name}
-                description={tier.description}
-                features={tier.features}
-                isCurrent={tier.id === user.membershipTier}
-                onSelect={async () => {
-                  // Stub for tier upgrade - will be implemented with payment integration
-                  console.log("Upgrade to", tier.name);
-                }}
-              />
+              <div key={tier.id} className="flex flex-col">
+                <TierCard
+                  name={tier.name}
+                  description={tier.description}
+                  features={tier.features}
+                  isCurrent={tier.id === user.membershipTier}
+                  onSelect={() => {}}
+                />
+                <div className="mt-4">
+                  <UpgradeButton
+                    tierId={tier.id}
+                    tierName={tier.name}
+                    currentTier={user.membershipTier}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </div>

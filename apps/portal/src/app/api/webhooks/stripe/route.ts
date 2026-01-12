@@ -70,6 +70,12 @@ export async function POST(request: NextRequest) {
 
         console.log(`Checkout completed: ${session.id} for user ${userId}`);
 
+        // Get user for email
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { email: true, name: true },
+        });
+
         // Update user tier and Stripe info
         await prisma.user.update({
           where: { id: userId },
@@ -79,6 +85,20 @@ export async function POST(request: NextRequest) {
             stripePriceId: session.metadata?.stripePriceId,
           },
         });
+
+        // Send payment receipt email
+        if (user?.email) {
+          const { sendPaymentReceiptEmail } = await import('@/lib/email');
+          const amount = session.amount_total ? session.amount_total / 100 : 0;
+          await sendPaymentReceiptEmail(
+            user.email,
+            amount,
+            tierName || tierId,
+            session.invoice as string | undefined
+          ).catch((err) =>
+            console.error('Failed to send payment receipt:', err)
+          );
+        }
 
         // Create subscription record if subscription ID exists
         if (session.subscription) {
@@ -176,6 +196,24 @@ export async function POST(request: NextRequest) {
             'warning'
           );
 
+          // Send payment failed email
+          const user = await prisma.user.findUnique({
+            where: { id: subscription.userId },
+            select: { email: true },
+          });
+
+          if (user?.email) {
+            const { sendPaymentFailedEmail } = await import('@/lib/email');
+            const amount = invoice.amount_due ? invoice.amount_due / 100 : 0;
+            await sendPaymentFailedEmail(
+              user.email,
+              subscription.currentTier,
+              amount
+            ).catch((err) =>
+              console.error('Failed to send payment failed email:', err)
+            );
+          }
+
           console.log(`Subscription ${subscriptionId} marked as past_due`);
         }
 
@@ -246,6 +284,19 @@ export async function POST(request: NextRequest) {
             message: `User ${existingSubscription.userId} downgraded to tier1 after cancellation`,
             level: 'warning',
           });
+
+          // Send subscription canceled email
+          if (existingSubscription.user.email) {
+            const { sendSubscriptionCanceledEmail } = await import('@/lib/email');
+            const accessUntil = existingSubscription.renewalDate || new Date();
+            await sendSubscriptionCanceledEmail(
+              existingSubscription.user.email,
+              existingSubscription.currentTier,
+              accessUntil
+            ).catch((err) =>
+              console.error('Failed to send cancellation email:', err)
+            );
+          }
 
           console.log(
             `User ${existingSubscription.userId} downgraded to tier1`

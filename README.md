@@ -13,7 +13,8 @@ A flexible, config-driven membership portal platform built with Next.js, TypeScr
 - **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
 - **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline
 - **⚡ [Performance & Budgets](#performance--lighthouse-ci)** - Lighthouse CI budgets and local commands
-- **📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
+- **� [Monitoring & Observability](MONITORING.md)** - Sentry error tracking, uptime monitoring, performance metrics
+- **�📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
 
 ## Table of Contents
 
@@ -337,21 +338,13 @@ This project follows standard JavaScript/React coding conventions:
    - `/`: FCP 2.0s, LCP 2.5s, Speed Index 2.8s, total size 180 KB, scripts 90 KB
    - `/campus`: FCP 2.2s, LCP 2.7s, Speed Index 3.0s, total size 200 KB, scripts 100 KB
 
-## Deployment
+## Monitoring & Observability
 
-### Production Deployment
+- **Error tracking:** Sentry integration with automatic error capture, session replays, and user context
+- **Health checks:** `/api/health` endpoints on both apps for uptime monitoring (e.g., UptimeRobot)
+- **Performance monitoring:** Automatic transaction tracking and performance alerts
+- **Setup:** See [MONITORING.md](MONITORING.md) for complete setup guide
 
-**Ready to deploy?** See [PRODUCTION.md](PRODUCTION.md) for complete production deployment guide including:
-- Database setup (Neon, Supabase, Railway)
-- OAuth configuration (GitHub & Google)
-- Vercel deployment steps
-- Environment variables
-- Custom domain configuration
-- Post-deployment verification
-
-### Quick Deployment
-
-**Vercel (Recommended):**
 ```bash
 # Install Vercel CLI
 npm install -g vercel

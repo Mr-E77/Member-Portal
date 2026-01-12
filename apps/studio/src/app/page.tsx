@@ -1,10 +1,34 @@
-import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+"use client";
 
-export default async function HomePage() {
-  const configs = await prisma.portalConfigModel.findMany({
-    orderBy: { updatedAt: "desc" },
-  });
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { AIChatWindow } from "@/components/AIChatWindow";
+
+interface Config {
+  id: string;
+  name: string;
+  preset: string;
+  updatedAt: Date;
+}
+
+export default function HomePage() {
+  const [configs, setConfigs] = useState<Config[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchConfigs() {
+      try {
+        const response = await fetch("/api/configs");
+        const data = await response.json();
+        setConfigs(data);
+      } catch (error) {
+        console.error("Failed to load configs:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchConfigs();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -25,7 +49,11 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {configs.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : configs.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-600 mb-4">No configurations found</p>
             <Link
@@ -46,13 +74,17 @@ export default async function HomePage() {
                 <h3 className="text-xl font-semibold mb-2">{config.name}</h3>
                 <p className="text-gray-600 mb-4">Preset: {config.preset}</p>
                 <p className="text-sm text-gray-500">
-                  Updated: {config.updatedAt?.toLocaleDateString?.() ?? ""}
+                  Updated:{" "}
+                  {new Date(config.updatedAt).toLocaleDateString()}
                 </p>
               </Link>
             ))}
           </div>
         )}
       </main>
+
+      {/* Global AI Chat - available on any page */}
+      {configs.length > 0 && <AIChatWindow configId={configs[0].id} />}
     </div>
   );
 }

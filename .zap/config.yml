@@ -1,0 +1,73 @@
+# OWASP ZAP Configuration for Member Portal
+
+# Session Management
+env:
+  contexts:
+    - name: "Member Portal"
+      urls:
+        - "http://localhost:3000"
+      includePaths:
+        - "http://localhost:3000/.*"
+      excludePaths:
+        - "http://localhost:3000/api/auth/.*"
+        - "http://localhost:3000/_next/.*"
+      authentication:
+        method: "manual"
+      sessionManagement:
+        method: "cookie"
+
+# Spider Configuration
+jobs:
+  - type: spider
+    parameters:
+      context: "Member Portal"
+      url: "http://localhost:3000"
+      maxDuration: 5
+      maxDepth: 10
+    
+  # Active Scan Configuration
+  - type: activeScan
+    parameters:
+      context: "Member Portal"
+      url: "http://localhost:3000"
+      maxRuleDuration: 5
+      maxScanDuration: 10
+      delayInMs: 0
+      handleAntiCSRFTokens: true
+      
+  # Passive Scan Configuration
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+# Alert Filters
+alertFilters:
+  - ruleId: 10202 # Absence of Anti-CSRF Tokens (handled by NextAuth)
+    newLevel: "INFO"
+  - ruleId: 10054 # Cookie without SameSite Attribute
+    newLevel: "LOW"
+  - ruleId: 10021 # X-Content-Type-Options Header Missing
+    newLevel: "INFO"
+
+# Scan Policy
+scanPolicy:
+  name: "Member Portal Security Policy"
+  thresholds:
+    HIGH: "fail"
+    MEDIUM: "warn"
+    LOW: "info"
+  rules:
+    - id: 40012 # Cross Site Scripting (Reflected)
+      threshold: "HIGH"
+    - id: 40014 # Cross Site Scripting (Persistent)
+      threshold: "HIGH"
+    - id: 40018 # SQL Injection
+      threshold: "HIGH"
+    - id: 90019 # Server Side Code Injection
+      threshold: "HIGH"
+    - id: 40029 # Insecure HTTP Method
+      threshold: "MEDIUM"
+    - id: 10202 # Absence of Anti-CSRF Tokens
+      threshold: "MEDIUM"
+    - id: 10098 # Cross-Domain Misconfiguration
+      threshold: "HIGH"

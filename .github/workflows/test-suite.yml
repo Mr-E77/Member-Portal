@@ -1,0 +1,300 @@
+name: "Test Suite - Phase 3"
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  DATABASE_URL: postgresql://testuser:testpass@localhost:5432/mre_test
+
+jobs:
+  # Unit Tests
+  unit-tests:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm run test:run -- tests/unit/
+        working-directory: apps/portal
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/portal/coverage/coverage-final.json
+          flags: unit-tests
+          fail_ci_if_error: false
+
+  # Integration Tests
+  integration-tests:
+    name: "Integration Tests"
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mre_test
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run database migrations
+        run: npm run db:migrate:deploy
+        working-directory: apps/portal
+      
+      - name: Run integration tests
+        run: npm run test:run -- tests/integration/
+        working-directory: apps/portal
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/portal/coverage/coverage-final.json
+          flags: integration-tests
+          fail_ci_if_error: false
+
+  # Component Tests
+  component-tests:
+    name: "Component Tests"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run component tests
+        run: npm run test:run -- tests/components/
+        working-directory: apps/portal
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/portal/coverage/coverage-final.json
+          flags: component-tests
+          fail_ci_if_error: false
+
+  # Coverage Report
+  coverage:
+    name: "Coverage Report"
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, component-tests]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run full coverage
+        run: npm run test:coverage
+        working-directory: apps/portal
+      
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/portal/coverage/coverage-final.json
+          flags: full-coverage
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(cat ./apps/portal/coverage/coverage-summary.json | grep -o '"lines":{[^}]*}' | grep -o '"pct":[0-9.]*' | head -1 | cut -d: -f2)
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 85" | bc -l) )); then
+            echo "❌ Coverage below 85% threshold"
+            exit 1
+          fi
+          echo "✅ Coverage meets 85% threshold"
+
+  # E2E Tests
+  e2e-tests:
+    name: "E2E Tests"
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: mre_test
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+        working-directory: apps/portal
+      
+      - name: Run database migrations
+        run: npm run db:migrate:deploy
+        working-directory: apps/portal
+      
+      - name: Start application
+        run: npm run start &
+        working-directory: apps/portal
+      
+      - name: Wait for application
+        run: npx wait-on http://localhost:3000 --timeout 30000
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+        working-directory: apps/portal
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: apps/portal/playwright-report/
+          retention-days: 30
+
+  # Lighthouse CI
+  lighthouse:
+    name: "Lighthouse CI"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        run: npm run build
+        working-directory: apps/portal
+      
+      - name: Start application
+        run: npm run perf:serve &
+        working-directory: apps/portal
+      
+      - name: Wait for application
+        run: npx wait-on http://localhost:3000 --timeout 30000
+      
+      - name: Run Lighthouse CI
+        run: npm run perf:lhci
+        working-directory: apps/portal
+      
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lighthouse-results
+          path: apps/portal/.lighthouseci/
+          retention-days: 30
+
+  # Summary
+  test-summary:
+    name: "Test Summary"
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, component-tests, coverage, e2e-tests, lighthouse]
+    if: always()
+    
+    steps:
+      - name: Check test results
+        run: |
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.unit-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | ${{ needs.integration-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Component Tests | ${{ needs.component-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage | ${{ needs.coverage.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lighthouse | ${{ needs.lighthouse.result }} |" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Fail if any test failed
+        if: |
+          needs.unit-tests.result == 'failure' ||
+          needs.integration-tests.result == 'failure' ||
+          needs.component-tests.result == 'failure' ||
+          needs.coverage.result == 'failure' ||
+          needs.e2e-tests.result == 'failure' ||
+          needs.lighthouse.result == 'failure'
+        run: |
+          echo "❌ One or more test suites failed"
+          exit 1
+      
+      - name: Success
+        if: success()
+        run: echo "✅ All tests passed successfully"

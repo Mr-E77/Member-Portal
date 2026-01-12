@@ -1,0 +1,59 @@
+# Docker Compose for Mr.E Member Portal (Local Development)
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mre-portal-db
+    environment:
+      POSTGRES_USER: mreuser
+      POSTGRES_PASSWORD: mrepassword
+      POSTGRES_DB: mre_portal
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mreuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  portal:
+    build:
+      context: .
+      dockerfile: apps/portal/Dockerfile
+    container_name: mre-portal-app
+    environment:
+      - DATABASE_URL=postgresql://mreuser:mrepassword@postgres:5432/mre_portal
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=local-dev-secret-change-in-production
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/portal:/app/apps/portal
+      - /app/node_modules
+      - /app/apps/portal/node_modules
+
+  studio:
+    build:
+      context: .
+      dockerfile: apps/studio/Dockerfile
+    container_name: mre-studio-app
+    environment:
+      - DATABASE_URL=postgresql://mreuser:mrepassword@postgres:5432/mre_portal
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/studio:/app/apps/studio
+      - /app/node_modules
+      - /app/apps/studio/node_modules
+
+volumes:
+  postgres_data:

@@ -172,6 +172,8 @@ export function ConfigEditor({ initialConfig, mode, configId }: ConfigEditorProp
         >
           <option value="generic">Generic</option>
           <option value="campus-sound">Campus Sound</option>
+          <option value="tech-startup">Tech Startup</option>
+          <option value="fitness-club">Fitness Club</option>
         </select>
       </div>
 

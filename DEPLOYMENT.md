@@ -13,6 +13,7 @@ This document provides detailed instructions for deploying the Mr.E Generic Memb
   - [Railway](#railway)
   - [Netlify](#netlify)
   - [Custom Server](#custom-server)
+   - [Docker Compose (Local Dev)](#docker-compose-local-dev)
 - [Post-Deployment](#post-deployment)
 - [Troubleshooting](#troubleshooting)
 
@@ -118,6 +119,17 @@ npm run dev:portal
 # Run studio (in separate terminal)
 npm run dev:studio
 ```
+
+### 4. Docker Compose (local dev)
+
+```bash
+docker-compose up --build
+```
+
+Services:
+- `postgres` on 5432
+- `portal` on http://localhost:3000
+- `studio` on http://localhost:3001
 
 ## Deployment Platforms
 

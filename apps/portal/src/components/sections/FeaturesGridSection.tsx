@@ -26,15 +26,23 @@ export function FeaturesGridSection() {
   ];
 
   return (
-    <Section className="bg-white">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Platform Features</h2>
+    <Section className="bg-gray-50 py-16">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">Platform Features</h2>
+        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+          Everything you need to manage your membership and connect with your community.
+        </p>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="text-center">
-              <div className="text-5xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+            <div 
+              key={index} 
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow text-center group"
+            >
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">{feature.title}</h3>
+              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>

@@ -1,0 +1,14 @@
+# .dockerignore
+node_modules
+npm-debug.log
+.next
+.git
+.gitignore
+.env*.local
+.env.development
+.env.test
+.vercel
+*.md
+LICENSE
+.vscode
+.idea

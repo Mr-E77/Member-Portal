@@ -24,7 +24,7 @@ export type PortalSectionConfig = {
 
 export type PortalConfig = {
   id: string;
-  preset: "generic" | "campus-sound";
+  preset: "generic" | "campus-sound" | "tech-startup" | "fitness-club";
   platformName: string;
   organizationName: string;
   heroTitle: string;

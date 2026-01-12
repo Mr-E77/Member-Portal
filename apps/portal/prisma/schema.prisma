@@ -172,3 +172,220 @@ model ApiToken {
   @@index([lastUsedAt])
   @@map("api_tokens")
 }
+// ============================================================================
+// STUDIO FEATURES - Color Management & Theming
+// ============================================================================
+
+model StudioTheme {
+  id              String   @id @default(cuid())
+  configId        String
+  name            String
+  description     String?
+  primaryColor    String   @default("#3B82F6")
+  secondaryColor  String   @default("#8B5CF6")
+  accentColor     String   @default("#EC4899")
+  backgroundColor String   @default("#FFFFFF")
+  textColor       String   @default("#1F2937")
+  borderColor     String   @default("#E5E7EB")
+  
+  // Additional CSS variables stored as JSON
+  variables       Json? // { "--custom-spacing": "4px", ... }
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([configId])
+  @@map("studio_themes")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Asset Management (Images/Media)
+// ============================================================================
+
+model StudioAsset {
+  id          String   @id @default(cuid())
+  configId    String
+  name        String
+  type        String   // "image" | "video" | "icon" | "logo"
+  url         String   // S3 or CDN URL
+  thumbnailUrl String?
+  size        Int      // File size in bytes
+  mimeType    String
+  width       Int?
+  height      Int?
+  metadata    Json?    // Additional metadata
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([configId])
+  @@index([type])
+  @@map("studio_assets")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Team & Contacts Management
+// ============================================================================
+
+model StudioContact {
+  id          String   @id @default(cuid())
+  configId    String
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  role        String?  // "designer" | "developer" | "manager" | "contributor"
+  avatar      String?  // S3 URL
+  bio         String?
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  messages    StudioMessage[] @relation("ContactMessages")
+  receivedMessages StudioMessage[] @relation("RecipientMessages")
+
+  @@index([configId])
+  @@index([email])
+  @@map("studio_contacts")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Messaging & Collaboration
+// ============================================================================
+
+model StudioMessage {
+  id          String   @id @default(cuid())
+  configId    String
+  fromContactId String
+  toContactId String
+  subject     String?
+  content     String   // Markdown support
+  attachments Json?    // Array of attachment URLs
+  
+  read        Boolean  @default(false)
+  readAt      DateTime?
+  starred     Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  fromContact StudioContact @relation("ContactMessages", fields: [fromContactId], references: [id], onDelete: Cascade)
+  toContact   StudioContact @relation("RecipientMessages", fields: [toContactId], references: [id], onDelete: Cascade)
+
+  @@index([configId])
+  @@index([fromContactId])
+  @@index([toContactId])
+  @@index([read])
+  @@map("studio_messages")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Feature Development & Timeline
+// ============================================================================
+
+model StudioFeature {
+  id            String   @id @default(cuid())
+  configId      String
+  name          String
+  description   String?
+  status        String   @default("planning") // planning | in-progress | review | completed
+  priority      String   @default("medium") // low | medium | high | critical
+  dueDate       DateTime?
+  
+  // Implementation details
+  componentCode String? // Generated code
+  generatedBy   String? // "gemini" | "manual"
+  
+  // Timeline tracking
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+
+  timeline      StudioTimeline[]
+
+  @@index([configId])
+  @@index([status])
+  @@index([priority])
+  @@map("studio_features")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Activity & Change Timeline
+// ============================================================================
+
+model StudioTimeline {
+  id            String   @id @default(cuid())
+  configId      String
+  featureId     String?
+  action        String   // "created" | "updated" | "deleted" | "deployed" | "ai_generated"
+  description   String
+  changes       Json?    // Diff or change details
+  
+  metadata      Json?    // Additional context (user, location, etc.)
+  
+  createdAt     DateTime @default(now())
+
+  feature       StudioFeature? @relation(fields: [featureId], references: [id], onDelete: SetNull)
+
+  @@index([configId])
+  @@index([featureId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("studio_timeline")
+}
+
+// ============================================================================
+// STUDIO FEATURES - Generated Code Components
+// ============================================================================
+
+model StudioComponent {
+  id            String   @id @default(cuid())
+  configId      String
+  name          String
+  description   String?
+  category      String   // "button" | "card" | "form" | "layout" | "navigation"
+  
+  // Code generation
+  code          String   // React component code
+  generatedFrom String?  // Prompt or feature ID
+  generatedBy   String?  // "gemini" | "template"
+  
+  // Metadata
+  version       String   @default("1.0.0")
+  dependencies  Json?    // Required packages
+  props         Json?    // Component prop definitions
+  examples      Json?    // Usage examples
+  
+  featured      Boolean  @default(false)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([configId])
+  @@index([category])
+  @@index([featured])
+  @@map("studio_components")
+}
+
+// ============================================================================
+// STUDIO FEATURES - AI Chat History
+// ============================================================================
+
+model StudioAIChat {
+  id            String   @id @default(cuid())
+  configId      String
+  title         String?  // Chat session title
+  
+  messages      Json    // Array of { role, content, timestamp }
+  context       Json?   // Context about what's being discussed
+  
+  generatedCount Int @default(0) // Number of components/features generated
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([configId])
+  @@index([createdAt])
+  @@map("studio_ai_chats")
+}

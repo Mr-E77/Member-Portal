@@ -93,6 +93,7 @@ model Subscription {
   startDate         DateTime
   renewalDate       DateTime?
   canceledAt        DateTime?
+  reminderSentAt    DateTime? // Track if 7-day renewal reminder was sent
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

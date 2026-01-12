@@ -43,5 +43,11 @@
       "destination": "/fitness/home",
       "permanent": false
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/scheduled/renewal-reminders",
+      "schedule": "0 9 * * *"
+    }
   ]
 }

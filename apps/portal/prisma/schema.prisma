@@ -15,13 +15,22 @@ model User {
   email           String?  @unique
   emailVerified   DateTime?
   image           String?
+  avatarUrl       String?  // S3 avatar URL
   membershipTier  String   @default("tier1") // Tier IDs match config
   stripeCustomerId String?
   stripePriceId   String?  // Current subscription price ID
+  lastLoginAt     DateTime?
+  createdAt       DateTime @default(now())
 
   accounts Account[]
   sessions Session[]
   subscriptions Subscription[]
+  adminActivityLogs AdminActivityLog[] @relation("AdminUser")
+  targetActivityLogs AdminActivityLog[] @relation("TargetUser")
+  adminImpersonations AdminImpersonation[] @relation("AdminImpersonations")
+  targetImpersonations AdminImpersonation[] @relation("TargetImpersonations")
+  notifications Notification[]
+  apiTokens ApiToken[]
 }
 
 model Account {
@@ -87,4 +96,69 @@ model Subscription {
 
   @@index([userId])
   @@index([stripeSubscriptionId])
+}
+
+model AdminActivityLog {
+  id            String   @id @default(cuid())
+  adminId       String
+  action        String   // e.g., "UPDATE_TIER", "DELETE_USER", "BULK_DELETE"
+  targetUserId  String?
+  details       Json?    // Additional context
+  createdAt     DateTime @default(now())
+
+  admin       User  @relation("AdminUser", fields: [adminId], references: [id], onDelete: Cascade)
+  targetUser  User? @relation("TargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@index([targetUserId])
+  @@index([createdAt])
+  @@map("admin_activity_logs")
+}
+
+model AdminImpersonation {
+  id            String    @id @default(cuid())
+  adminId       String
+  targetUserId  String
+  startedAt     DateTime  @default(now())
+  endedAt       DateTime?
+  expiresAt     DateTime
+
+  admin       User @relation("AdminImpersonations", fields: [adminId], references: [id], onDelete: Cascade)
+  targetUser  User @relation("TargetImpersonations", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([targetUserId])
+  @@map("admin_impersonations")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  message   String
+  type      String   @default("info") // info, warning, error, success
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model ApiToken {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String    // User-friendly name for the token
+  token       String    @unique // Hashed token
+  scopes      String[]  // Permissions: ["read:profile", "write:subscriptions"]
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("api_tokens")
 }

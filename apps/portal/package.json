@@ -45,6 +45,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
+    "@lhci/cli": "^0.15.1",
+    "@percy/cli": "^1.31.7",
+    "@percy/playwright": "^1.0.10",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -54,7 +57,6 @@
     "@types/node": "^20.19.28",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@lhci/cli": "^0.15.1",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
@@ -62,11 +64,11 @@
     "eslint-config-next": "16.1.1",
     "happy-dom": "^20.1.0",
     "jsdom": "^27.4.0",
-    "wait-on": "^7.2.0",
     "prisma": "^7.2.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "wait-on": "^7.2.0"
   }
 }

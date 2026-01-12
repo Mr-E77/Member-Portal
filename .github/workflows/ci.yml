@@ -135,8 +135,21 @@ jobs:
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/test_db
           NEXTAUTH_URL: http://localhost:3000
           NEXTAUTH_SECRET: test-secret-do-not-use-in-production
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           CI: true
         run: npm run test:e2e
+      
+      - name: Run Visual Regression Tests with Percy
+        working-directory: apps/portal
+        if: always()
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/test_db
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-secret-do-not-use-in-production
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          CI: true
+        run: |
+          npx percy exec -- npm run test:e2e -- e2e/visual.spec.ts
       
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4

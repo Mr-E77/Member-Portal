@@ -10,15 +10,18 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  name           String?
-  email          String?  @unique
-  emailVerified  DateTime?
-  image          String?
-  membershipTier String   @default("tier1") // Tier IDs match config
+  id              String   @id @default(cuid())
+  name            String?
+  email           String?  @unique
+  emailVerified   DateTime?
+  image           String?
+  membershipTier  String   @default("tier1") // Tier IDs match config
+  stripeCustomerId String?
+  stripePriceId   String?  // Current subscription price ID
 
   accounts Account[]
   sessions Session[]
+  subscriptions Subscription[]
 }
 
 model Account {
@@ -64,4 +67,24 @@ model PortalConfigModel {
   data      Json    // Serialized PortalConfig
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Subscription {
+  id                String   @id @default(cuid())
+  userId            String
+  stripeCustomerId  String
+  stripeSubscriptionId String
+  stripePriceId     String
+  status            String   @default("active") // active, past_due, canceled
+  currentTier       String   // Tier name (tier1, tier2, tier3, tier4)
+  startDate         DateTime
+  renewalDate       DateTime?
+  canceledAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
 }

@@ -4,6 +4,8 @@ dist/
 build/
 out/
 coverage/
+.lighthouseci/
+apps/portal/.lighthouseci/
 
 # Environment
 .env

@@ -1,6 +1,7 @@
 # Mr.E Generic Membership Platform
 
 [![CI/CD Pipeline](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml/badge.svg)](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml)
+[![Lighthouse CI](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml/badge.svg?branch=main&label=Lighthouse%20CI)](https://github.com/Mr-E77/Member-Portal/actions/workflows/ci.yml)
 [![E2E Tests](https://github.com/Mr-E77/Member-Portal/actions/workflows/e2e-scheduled.yml/badge.svg)](https://github.com/Mr-E77/Member-Portal/actions/workflows/e2e-scheduled.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -11,6 +12,7 @@ A flexible, config-driven membership portal platform built with Next.js, TypeScr
 - **📚 [Production Deployment Guide](PRODUCTION.md)** - Complete production deployment instructions
 - **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
 - **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline
+- **⚡ [Performance & Budgets](#performance--lighthouse-ci)** - Lighthouse CI budgets and local commands
 - **📦 [Deployment Options](DEPLOYMENT.md)** - Deploy to Vercel, Netlify, AWS, or custom servers
 
 ## Table of Contents
@@ -319,6 +321,21 @@ This project follows standard JavaScript/React coding conventions:
 2. Make your changes
 3. Test thoroughly
 4. Submit a pull request
+
+## Performance & Lighthouse CI
+
+- **CI coverage:** Lighthouse runs on `/` and `/campus` with budgets for FCP, LCP, Speed Index, and total bundle size. Budgets fail the build if performance regresses.
+- **Local run:**
+   ```bash
+   npm run build --workspace=portal
+   cd apps/portal
+   npm run perf:serve &
+   npx wait-on http://localhost:3000
+   npm run perf:lhci
+   ```
+- **Budgets:**
+   - `/`: FCP 2.0s, LCP 2.5s, Speed Index 2.8s, total size 180 KB, scripts 90 KB
+   - `/campus`: FCP 2.2s, LCP 2.7s, Speed Index 3.0s, total size 200 KB, scripts 100 KB
 
 ## Deployment
 

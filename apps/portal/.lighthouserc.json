@@ -1,0 +1,75 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 2,
+      "startServerCommand": "npm run start -- --hostname 0.0.0.0 --port 3000",
+      "startServerReadyPattern": "started server on",
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/campus"
+      ],
+      "settings": {
+        "formFactor": "desktop",
+        "screenEmulation": {
+          "mobile": false,
+          "width": 1366,
+          "height": 768,
+          "deviceScaleFactor": 1,
+          "disabled": false
+        }
+      },
+      "budgets": [
+        {
+          "path": "/",
+          "resourceCounts": [
+            { "resourceType": "total", "budget": 120 },
+            { "resourceType": "script", "budget": 30 },
+            { "resourceType": "image", "budget": 40 }
+          ],
+          "resourceSizes": [
+            { "resourceType": "total", "budget": 180 },
+            { "resourceType": "script", "budget": 90 },
+            { "resourceType": "image", "budget": 120 }
+          ],
+          "timings": [
+            { "metric": "first-contentful-paint", "budget": 2000 },
+            { "metric": "largest-contentful-paint", "budget": 2500 },
+            { "metric": "speed-index", "budget": 2800 },
+            { "metric": "interactive", "budget": 3000 }
+          ]
+        },
+        {
+          "path": "/campus",
+          "resourceCounts": [
+            { "resourceType": "total", "budget": 140 },
+            { "resourceType": "script", "budget": 35 },
+            { "resourceType": "image", "budget": 50 }
+          ],
+          "resourceSizes": [
+            { "resourceType": "total", "budget": 200 },
+            { "resourceType": "script", "budget": 100 },
+            { "resourceType": "image", "budget": 140 }
+          ],
+          "timings": [
+            { "metric": "first-contentful-paint", "budget": 2200 },
+            { "metric": "largest-contentful-paint", "budget": 2700 },
+            { "metric": "speed-index", "budget": 3000 },
+            { "metric": "interactive", "budget": 3200 }
+          ]
+        }
+      ]
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["warn", { "minScore": 0.9 }],
+        "categories:best-practices": ["warn", { "minScore": 0.9 }],
+        "categories:seo": ["warn", { "minScore": 0.9 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}

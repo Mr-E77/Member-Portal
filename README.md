@@ -9,6 +9,7 @@ A flexible, config-driven membership portal platform built with Next.js, TypeScr
 
 ## 🚀 Quick Links
 
+- **✨ [Complete Feature List](FEATURES.md)** - 150+ implemented features across all categories
 - **📚 [Production Deployment Guide](PRODUCTION.md)** - Complete production deployment instructions
 - **🧪 [Testing Documentation](TESTING.md)** - Unit, integration, and database testing
 - **🎭 [E2E Testing Guide](E2E_TESTING.md)** - End-to-end testing and CI/CD pipeline
@@ -102,14 +103,27 @@ Member-Portal/
 - **Member Dashboard**: Personalized dashboard showing current tier and features
 - **Mr.E Profile**: Member profile management with editable fields
 - **Membership Tiers**: 4 configurable tiers with upgrade paths
+- **Payments & Subscriptions**: Stripe integration for tier upgrades with full webhook support
+- **Subscription Management**: View, cancel, and track subscriptions with renewal dates
 - **Config-Driven Sections**: Dynamic page rendering based on configuration
 - **Responsive Design**: Tailwind CSS for modern, mobile-first UI
+- **Performance Optimization**: In-memory caching, bundle splitting, image optimization
+- **Analytics Integration**: PostHog event tracking and user identification
+- **Admin Dashboard**: User management, revenue tracking, platform statistics
 
 ### Studio App
 - **Configuration Management**: Create and edit portal configurations
 - **Form-Based Editor**: Simple form interface for common settings
 - **Preset Selection**: Choose between generic and preset-specific configs
 - **Database Persistence**: Save configurations to PostgreSQL
+
+### Infrastructure & DevOps
+- **Monitoring & Observability**: Sentry error tracking with performance monitoring
+- **Security Hardening**: CSP headers, rate limiting, OWASP ZAP scanning
+- **Visual Regression Testing**: Percy snapshots with CI integration
+- **E2E Testing**: 36+ Playwright tests covering auth, payments, visual, security
+- **CI/CD Pipeline**: GitHub Actions with 7 jobs (lint, test, build, security, visual, lighthouse)
+- **Health Checks**: API endpoints for uptime monitoring
 
 ### Shared Components
 - **Reusable UI Library**: Button, Card, Section, TierCard components

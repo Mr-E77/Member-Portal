@@ -7,6 +7,7 @@ import { getStaticConfig } from "@/config";
 import { TierCard } from "@mre/ui";
 import { UpgradeButton } from "@/components/UpgradeButton";
 import { UpgradeStatusMessage } from "@/components/UpgradeStatusMessage";
+import { SubscriptionManager } from "@/components/SubscriptionManager";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -76,6 +77,10 @@ export default async function DashboardPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="mb-8">
+          <SubscriptionManager />
         </div>
 
         <div>

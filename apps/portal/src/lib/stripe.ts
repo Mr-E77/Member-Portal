@@ -53,6 +53,8 @@ export async function createCheckoutSession(
     metadata: {
       userId,
       tierName,
+      tierId: tierName.toLowerCase().replace(' ', ''), // tier2, tier3, etc.
+      stripePriceId: priceId,
     },
   });
 

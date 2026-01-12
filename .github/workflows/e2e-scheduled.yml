@@ -1,0 +1,75 @@
+name: E2E Tests (Scheduled)
+
+on:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  e2e-full:
+    name: Full E2E Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: apps/portal
+        run: npx playwright install --with-deps
+      
+      - name: Setup database
+        working-directory: apps/portal
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/test_db
+        run: |
+          npx prisma migrate deploy
+          npx prisma generate
+          npm run db:seed
+      
+      - name: Run E2E tests
+        working-directory: apps/portal
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/test_db
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-secret-do-not-use-in-production
+        run: npm run test:e2e
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-full-report
+          path: |
+            apps/portal/playwright-report/
+            apps/portal/test-results/
+          retention-days: 30
+      
+      - name: Notify on failure
+        if: failure()
+        run: echo "E2E tests failed! Check the artifacts for details."
